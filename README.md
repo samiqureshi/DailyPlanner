@@ -1,6 +1,6 @@
 # 📋 Daily Task Planner & Roller
 
-A sleek, dark-themed daily task planner built with vanilla HTML, CSS, and JavaScript. Designed for developers and teams who track JIRA tickets, sprint deliverables, and discovery work — with automatic rollover of unfinished tasks.
+A sleek, dark-themed daily task planner vibe coded using Antigravity with vanilla HTML, CSS, and JavaScript. Designed for developers and teams who track JIRA tickets, sprint deliverables, and discovery work — with automatic rollover of unfinished tasks.
 
 **No frameworks. No backend. No accounts.** Just open `index.html` and start planning.
 
