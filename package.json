@@ -1,0 +1,8 @@
+{
+  "name": "daily-task-planner",
+  "version": "1.0.0",
+  "description": "Daily Task Planner with rolling and postponing support",
+  "scripts": {
+    "dev": "npx -y http-server . -p 3000"
+  }
+}

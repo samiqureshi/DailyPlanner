@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Task Planner & Roller</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        
+        <!-- App Header with Statistics -->
+        <header class="glass-panel header-panel">
+            <div class="header-title-container">
+                <h1>Task Planner & Roller</h1>
+                <p>Track daily deliverables, JIRA tickets, and roll over unfinished tasks.</p>
+            </div>
+            
+            <div class="header-stats">
+                <div class="stat-numbers">
+                    <span id="stat-completed" class="stat-completed">0/0</span>
+                    <span class="stat-label">Tasks Done</span>
+                </div>
+                <div class="progress-container">
+                    <svg class="progress-ring" width="60" height="60">
+                        <circle class="progress-ring__circle" stroke="hsl(224, 20%, 25%)" stroke-width="4" fill="transparent" r="27" cx="30" cy="30" />
+                        <circle class="progress-ring__circle" stroke="var(--accent-cyan)" stroke-width="4" fill="transparent" r="27" cx="30" cy="30" stroke-dasharray="169.64 169.64" stroke-dashoffset="169.64" stroke-linecap="round" />
+                    </svg>
+                    <span class="progress-text">0%</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Date Navigation Bar -->
+        <section class="glass-panel date-navigator">
+            <div class="date-actions-left">
+                <button id="btn-yesterday" class="btn">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                    Yesterday
+                </button>
+                <button id="btn-today" class="btn btn-active">Today</button>
+                <button id="btn-tomorrow" class="btn">
+                    Tomorrow
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </button>
+            </div>
+            
+            <div class="current-date-display" id="current-date-display">
+                Today
+            </div>
+            
+            <div class="date-picker-wrapper">
+                <input type="date" id="date-picker" class="date-input">
+            </div>
+        </section>
+
+        <!-- Task Input Section (Single & Bulk) -->
+        <section class="glass-panel input-panel">
+            <div class="input-tabs">
+                <button class="tab-btn active" data-tab="single-input-tab">Add Single Task</button>
+                <button class="tab-btn" data-tab="bulk-input-tab">Bulk Daily Import</button>
+            </div>
+            
+            <!-- Single Add Tab -->
+            <div id="single-input-tab" class="tab-content active">
+                <form id="single-add-form" class="single-add-form">
+                    <input type="text" id="task-input" class="text-input" placeholder="e.g. AUTH-102: Implement logout #sprint #discovery" autocomplete="off">
+                    <button type="submit" class="btn btn-active">Add Task</button>
+                </form>
+            </div>
+            
+            <!-- Bulk Import Tab -->
+            <div id="bulk-input-tab" class="tab-content">
+                <form id="bulk-import-form" class="bulk-import-form">
+                    <textarea id="bulk-input" class="textarea-input" placeholder="Paste tasks (one per line). Examples:&#10;AUTH-102: Implement user login #sprint&#10;Research secure storage options (discovery)&#10;Check cloudwatch logs for errors"></textarea>
+                    <div class="bulk-actions">
+                        <span class="input-instructions">Separate tasks with new lines. Tags like JIRA codes, 'sprint' and 'discovery' will parse automatically.</span>
+                        <button type="submit" class="btn btn-active">Import Tasks</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Main Task List Displays -->
+        <main class="glass-panel" style="display: flex; flex-direction: column; gap: 1.5rem;">
+            <!-- Active Tasks -->
+            <div>
+                <div class="list-section-header">
+                    <h2>Active Deliverables</h2>
+                    <span id="active-count" class="task-count-badge">0</span>
+                </div>
+                <div id="active-list" class="task-list">
+                    <!-- Task items injected here by app.js -->
+                </div>
+            </div>
+            
+            <!-- Completed Tasks -->
+            <div>
+                <div id="completed-header" class="list-section-header completed-header">
+                    <h2>Completed Today</h2>
+                    <span id="completed-count" class="task-count-badge">0</span>
+                </div>
+                <div id="completed-list" class="task-list">
+                    <!-- Task items injected here by app.js -->
+                </div>
+            </div>
+
+            <!-- Postponed Tasks -->
+            <div>
+                <div id="postponed-header" class="list-section-header postponed-header">
+                    <h2>Postponed</h2>
+                    <span id="postponed-count" class="task-count-badge">0</span>
+                </div>
+                <div id="postponed-list" class="task-list">
+                    <!-- Task items injected here by app.js -->
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer / Database Settings -->
+        <footer class="footer-panel">
+            <span>Local Storage Active</span>
+            <div class="footer-actions">
+                <span id="btn-export" class="text-link">Export Backup</span>
+                <span id="btn-import" class="text-link">Import Backup</span>
+                <input type="file" id="file-import" accept=".json" style="display: none;">
+                <span id="btn-reset" class="text-link" style="color: var(--accent-danger);">Reset Database</span>
+            </div>
+        </footer>
+
+    </div>
+
+    <script src="app.js"></script>
+    <!-- Postpone Modal -->
+    <div id="postpone-modal" class="modal hidden">
+        <div class="modal-content">
+            <!-- Options will be injected via JS -->
+        </div>
+    </div>
+</body>
+</html>
