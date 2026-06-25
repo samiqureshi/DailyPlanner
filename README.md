@@ -38,19 +38,30 @@ xdg-open index.html    # or: open index.html (macOS)
 start index.html
 ```
 
-### Option 2: Local Dev Server
-
-If you prefer serving via HTTP (useful for development):
+### Quick Start (Recommended)
 
 ```bash
-npm run dev
+npm install       # one-time setup
+npm run dev       # starts server at http://localhost:3000
 ```
 
-This starts an HTTP server at `http://localhost:3000` using `http-server`.
+This runs a tiny Node.js server that serves the app and saves your tasks to a local `data/tasks.json` file. Your data persists across browser restarts and clears.
 
-### Option 3: Desktop Shortcut
+### Alternative: Open as Static File
 
-Create a desktop shortcut that opens the planner directly in your browser:
+You can also open `index.html` directly in your browser with no server. In this mode the app falls back to `localStorage` (data is tied to the browser).
+
+```bash
+# Linux / macOS
+xdg-open index.html    # or: open index.html (macOS)
+
+# Windows
+start index.html
+```
+
+### Desktop Shortcut
+
+Create a desktop shortcut that starts the server and opens the planner:
 
 | OS      | Command                                        |
 |---------|-------------------------------------------------|
@@ -113,7 +124,9 @@ When you open the app, any **incomplete tasks from past days** are automatically
 
 ## 💾 Data Management
 
-All data is stored in your browser's `localStorage` under the key `daily-planner-tasks`.
+When running with the server (`npm run dev`), tasks are saved to `data/tasks.json` on disk. This file is `.gitignore`'d so your personal task data never gets committed.
+
+If opened as a static file (no server), the app falls back to browser `localStorage`.
 
 | Action            | How                                                     |
 |-------------------|---------------------------------------------------------|
@@ -121,7 +134,7 @@ All data is stored in your browser's `localStorage` under the key `daily-planner
 | **Import Backup**  | Click *Import Backup* in the footer → select a `.json` file   |
 | **Reset Database** | Click *Reset Database* in the footer → restores demo tasks    |
 
-> **Tip:** Export regularly if you want to keep your data across browser clears or different machines.
+> **Tip:** The `data/tasks.json` file is a plain JSON array — you can version it separately, back it up, or sync it across machines.
 
 ---
 
@@ -132,11 +145,15 @@ DailyPlanner/
 ├── index.html            # Main HTML page
 ├── styles.css            # All styling (glassmorphism dark theme)
 ├── app.js                # Application logic (parsing, rendering, storage)
-├── package.json          # Dev server script (optional)
+├── server.js             # Express server for local file persistence
+├── package.json          # Dependencies and dev script
+├── .gitignore            # Ignores data/ and node_modules/
 ├── run-planner.sh        # Linux launcher script
 ├── run-planner.bat       # Windows launcher script
 ├── create-shortcut.sh    # Creates Linux desktop shortcut
-└── create-shortcut.ps1   # Creates Windows desktop shortcut
+├── create-shortcut.ps1   # Creates Windows desktop shortcut
+└── data/
+    └── tasks.json        # Your task data (auto-created, git-ignored)
 ```
 
 ---
@@ -145,8 +162,9 @@ DailyPlanner/
 
 - **HTML5** — Semantic markup
 - **Vanilla CSS** — Custom properties, glassmorphism, responsive design
-- **Vanilla JavaScript** — Zero dependencies, no framework
-- **localStorage** — Client-side persistence
+- **Vanilla JavaScript** — No frontend framework
+- **Node.js + Express** — Tiny server for local file persistence
+- **localStorage** — Offline fallback when no server is running
 - **Google Fonts** — [Plus Jakarta Sans](https://fonts.google.com/specimen/Plus+Jakarta+Sans)
 
 ---

@@ -15,37 +15,45 @@ notify() {
   command -v notify-send >/dev/null 2>&1 && notify-send "Daily Task Planner" "$1"
 }
 
-file_uri() {
-  local path="$1"
-  local encoded="${path// /%20}"
-  echo "file://$encoded"
-}
+# Install dependencies if needed
+if [ ! -d "$SCRIPT_DIR/node_modules" ]; then
+  echo "Installing dependencies..."
+  (cd "$SCRIPT_DIR" && npm install)
+fi
 
-open_in_firefox() {
-  local target_uri
-  target_uri=$(file_uri "$INDEX_FILE")
+# Start the server in the background
+echo "Starting Daily Task Planner server..."
+(cd "$SCRIPT_DIR" && node server.js) &
+SERVER_PID=$!
 
-  local candidate
-  for candidate in /usr/bin/firefox firefox firefox-esr; do
-    if [ -x "$candidate" ] || command -v "$candidate" >/dev/null 2>&1; then
-      "$candidate" "$target_uri"
+# Give the server a moment to start
+sleep 1
+
+# Open in browser
+URL="http://localhost:3000"
+
+open_browser() {
+  for cmd in xdg-open sensible-browser firefox chromium google-chrome; do
+    if command -v "$cmd" >/dev/null 2>&1; then
+      "$cmd" "$URL"
       return 0
     fi
   done
-
   return 1
 }
 
 if [ -t 1 ]; then
-  echo "Opening Daily Task Planner in Firefox..."
+  echo "Opening Daily Task Planner at $URL ..."
 else
-  notify "Opening in Firefox..."
+  notify "Opening at $URL ..."
 fi
 
-if ! open_in_firefox; then
-  message="Could not find Firefox."
+if ! open_browser; then
+  message="Could not find a browser."
   echo "Error: $message" >&2
-  echo "Open this file manually in Firefox: $INDEX_FILE" >&2
+  echo "Open this URL manually: $URL" >&2
   command -v notify-send >/dev/null 2>&1 && notify-send "Daily Task Planner" "$message" -u critical
-  exit 1
 fi
+
+# Wait for the server process (keeps the script alive until Ctrl+C)
+wait $SERVER_PID

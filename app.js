@@ -1,6 +1,7 @@
 // App state
 let tasks = [];
 let currentDate = getTodayDateString();
+let useServer = false; // set to true if /api/tasks is reachable
 
 // SVG Progress Ring configuration
 const strokeDashOffsetVal = 169.64; // 2 * pi * r (r = 27)
@@ -43,9 +44,9 @@ const elements = {
 };
 
 // Initialize the Application
-function init() {
+async function init() {
     setupEventListeners();
-    loadTasks();
+    await loadTasks();
     runRolloverLogic();
     updateDateDisplay();
     render();
@@ -585,10 +586,53 @@ function updateDateDisplay() {
 
 // Data Import / Export / Storage
 function saveTasks() {
+    // Always keep localStorage in sync as a cache
     localStorage.setItem('daily-planner-tasks', JSON.stringify(tasks));
+
+    // Persist to server file if available
+    if (useServer) {
+        fetch('/api/tasks', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(tasks)
+        }).catch(err => console.warn('Server save failed, data safe in localStorage:', err));
+    }
 }
 
-function loadTasks() {
+async function loadTasks() {
+    // Try loading from server first
+    try {
+        const res = await fetch('/api/tasks');
+        if (res.ok) {
+            const data = await res.json();
+            useServer = true;
+            if (Array.isArray(data) && data.length > 0) {
+                tasks = data;
+                // Sync localStorage cache
+                localStorage.setItem('daily-planner-tasks', JSON.stringify(tasks));
+                return;
+            }
+            // Server is reachable but file is empty — check localStorage for existing data to migrate
+            const stored = localStorage.getItem('daily-planner-tasks');
+            if (stored) {
+                try {
+                    tasks = JSON.parse(stored);
+                    saveTasks(); // migrate localStorage data to server file
+                    return;
+                } catch (e) { /* fall through to demo */ }
+            }
+            // First time use — load demo tasks
+            tasks = getDemoTasks();
+            saveTasks();
+            return;
+        }
+    } catch (e) {
+        // Server not available (opened as plain file) — fall back to localStorage
+        console.info('Server not available, using localStorage fallback.');
+    }
+
+    // Fallback: localStorage only
+    useServer = false;
     const stored = localStorage.getItem('daily-planner-tasks');
     if (stored) {
         try {
@@ -598,7 +642,6 @@ function loadTasks() {
             tasks = [];
         }
     } else {
-        // Load some demo tasks for first time use
         tasks = getDemoTasks();
         saveTasks();
     }
